@@ -6,6 +6,9 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MoviesModule } from './modules/movies/movies.module';
 import { CategoryModule } from './modules/category/category.module';
+import { MediaModule } from './modules/media/media.module';
+import { FirebaseModule } from './modules/firebase/firebase.module';
+import { ReservatModule } from './modules/reservat/reservat.module';
 
 @Module({
   imports: [
@@ -24,6 +27,9 @@ import { CategoryModule } from './modules/category/category.module';
     UsersModule,
     MoviesModule,
     CategoryModule,
+    MediaModule,
+    FirebaseModule,
+    ReservatModule,
   ],
 })
 export class AppModule {}

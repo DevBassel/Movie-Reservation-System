@@ -1,4 +1,5 @@
 import { Category } from 'src/modules/category/entities/category.entity';
+import { Media } from 'src/modules/media/entities/media.entity';
 import {
   Column,
   CreateDateColumn,
@@ -17,8 +18,12 @@ export class Movie {
   @Column()
   title: string;
 
-  @Column()
-  poster: string;
+  @OneToOne(() => Media, {
+    createForeignKeyConstraints: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  poster: Media;
 
   @Column()
   discription: string;

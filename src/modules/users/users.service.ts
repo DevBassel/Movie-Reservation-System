@@ -1,11 +1,10 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from '../auth/dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { hash } from 'bcrypt';
-import { SuccessRes } from 'src/utils/success-response';
 
 @Injectable()
 export class UsersService {
@@ -17,7 +16,7 @@ export class UsersService {
     try {
       createUserDto.password = await hash(createUserDto.password, 10);
       await this.userRepo.save(createUserDto);
-      return SuccessRes('users is created', 201);
+      return { msg: 'users is created' };
     } catch (error) {
       if (error.code === '23505')
         throw new ConflictException('user already exist');

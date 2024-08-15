@@ -9,6 +9,9 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -16,8 +19,9 @@ import { UpdateMovieDto } from './dto/update-movie.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RoleGuard } from '../auth/guards/role.guard';
 import { SetRoles } from 'src/decorator/role.decorator';
-import { RoleType } from '../users/enums/roleType.enum';
+import { RoleType } from '../auth/enums/roleType.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { MoviesFilter } from './interfaces/movies-filters.interface';
 
 @Controller('movies')
 @UseGuards(JwtGuard, RoleGuard)
@@ -29,15 +33,27 @@ export class MoviesController {
   @UseInterceptors(FileInterceptor('poster'))
   create(
     @Body() createMovieDto: CreateMovieDto,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @UploadedFile() poster: Express.Multer.File,
   ) {
-    return this.moviesService.create(createMovieDto);
+    return this.moviesService.create(createMovieDto, poster);
   }
 
   @Get()
-  findAll() {
-    return this.moviesService.findAll();
+  findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('category') category: string,
+    @Query('name') name: string,
+    @Query('showTime') showTime: Date,
+    @Query('betweenTime') betweenTime: Date,
+  ) {
+    const filter: MoviesFilter = {
+      category,
+      name,
+      showTime,
+      betweenTime,
+    };
+    return this.moviesService.findAll(page, limit, filter);
   }
 
   @Get(':id')

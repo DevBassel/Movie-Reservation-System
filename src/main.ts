@@ -1,12 +1,21 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { existsSync, mkdirSync } from 'fs';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
+  // set logs dir
   if (!existsSync('./logs')) mkdirSync('./logs');
 
-  const app = await NestFactory.create(AppModule);
+  const app =
+    await NestFactory.create<INestApplication<NestExpressApplication>>(
+      AppModule,
+    );
 
   app.setGlobalPrefix('api/v1');
 

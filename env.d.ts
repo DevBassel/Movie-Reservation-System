@@ -4,7 +4,7 @@ declare global {
   namespace NodeJS {
     interface ProcessEnv {
       // APP
-      POSRT: number;
+      PORT: number;
       JWT_KEY: string;
       NODE_ENV: 'test' | 'dev' | 'prod';
       // DB

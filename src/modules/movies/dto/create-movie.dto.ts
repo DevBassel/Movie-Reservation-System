@@ -13,10 +13,6 @@ export class CreateMovieDto {
   title: string;
 
   @IsString()
-  @Length(2, 32)
-  poster: string;
-
-  @IsString()
   @Length(2, 255)
   discription: string;
 

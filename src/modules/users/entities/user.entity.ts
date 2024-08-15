@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { RoleType } from '../enums/roleType.enum';
+import { RoleType } from '../../auth/enums/roleType.enum';
 import { Exclude } from 'class-transformer';
 
 @Entity()

@@ -14,7 +14,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RoleGuard } from '../auth/guards/role.guard';
 import { SetRoles } from 'src/decorator/role.decorator';
-import { RoleType } from '../users/enums/roleType.enum';
+import { RoleType } from '../auth/enums/roleType.enum';
 
 @Controller('category')
 @UseGuards(JwtGuard, RoleGuard)
