@@ -4,14 +4,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { OrderStatus } from '../enums/order-status.enum';
 
 @Entity()
-export class Reservat {
+export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -24,18 +23,23 @@ export class Reservat {
   @Column()
   userId: string;
 
-  @OneToOne(() => Movie, {
+  @ManyToOne(() => Movie, {
     createForeignKeyConstraints: false,
     onDelete: 'CASCADE',
   })
-  @JoinColumn()
   movie: Movie;
 
   @Column()
-  seats: number;
+  movieId: string;
+
+  @Column({ enum: OrderStatus, default: OrderStatus.PENDING })
+  status: OrderStatus;
 
   @Column()
-  movieId: string;
+  total: number;
+
+  @Column()
+  seats: number;
 
   @CreateDateColumn()
   createdAt: Date;

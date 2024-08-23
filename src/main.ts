@@ -12,14 +12,17 @@ async function bootstrap() {
   // set logs dir
   if (!existsSync('./logs')) mkdirSync('./logs');
 
-  const app =
-    await NestFactory.create<INestApplication<NestExpressApplication>>(
-      AppModule,
-    );
+  const app = await NestFactory.create<
+    INestApplication<NestExpressApplication>
+  >(AppModule, {
+    rawBody: true,
+  });
 
   app.setGlobalPrefix('api/v1');
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+
+  app.enableCors();
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 

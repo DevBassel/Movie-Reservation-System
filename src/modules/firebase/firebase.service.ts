@@ -5,9 +5,9 @@ import { v4 } from 'uuid';
 
 @Injectable()
 export class FirebaseService {
-  private config = JSON.parse(process.env.SERVICEACCOUNT);
+  private readonly config = JSON.parse(process.env.SERVICEACCOUNT);
 
-  private admin = FB.initializeApp({
+  private readonly admin = FB.initializeApp({
     credential: FB.credential.cert(this.config),
     storageBucket: `${this.config.project_id}.appspot.com`,
   });

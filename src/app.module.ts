@@ -9,6 +9,8 @@ import { CategoryModule } from './modules/category/category.module';
 import { MediaModule } from './modules/media/media.module';
 import { FirebaseModule } from './modules/firebase/firebase.module';
 import { ReservatModule } from './modules/reservat/reservat.module';
+import { PaymentModule } from './modules/payment/payment.module';
+import { OrderModule } from './modules/order/order.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { ReservatModule } from './modules/reservat/reservat.module';
     MediaModule,
     FirebaseModule,
     ReservatModule,
+    PaymentModule,
+    OrderModule,
   ],
 })
 export class AppModule {}

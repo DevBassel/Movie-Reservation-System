@@ -19,6 +19,10 @@ export class CreateMovieDto {
   @IsUUID()
   categoryId: string;
 
+  @IsNumber()
+  @Type(() => Number)
+  price: number;
+
   @IsDateString()
   showtime: Date;
 

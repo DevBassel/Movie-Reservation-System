@@ -41,6 +41,9 @@ export class Movie {
   @Column()
   seats: number;
 
+  @Column()
+  price: number;
+
   @Column({ default: 0 })
   reservs: number;
 

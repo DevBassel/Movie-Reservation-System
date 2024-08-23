@@ -19,6 +19,8 @@ lerna-debug.log*
 # Tests
 /coverage
 /.nyc_output
+payment_method.json
+testPay.html
 
 # IDEs and editors
 /.idea

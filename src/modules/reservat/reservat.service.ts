@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateReservatDto } from './dto/create-reservat.dto';
 import { Reservat } from './entities/reservat.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,33 +13,37 @@ export class ReservatService {
     private readonly reservatRepo: Repository<Reservat>,
     private readonly movieService: MoviesService,
   ) {}
-  async create({ movieId }: CreateReservatDto, user: JwtPayload) {
-    const checkMovie = await this.movieService.findOne(movieId);
-    if (!checkMovie) throw new NotFoundException('this movie not found');
 
-    if (checkMovie.reservs >= checkMovie.seats)
-      throw new BadRequestException('seats has been completed!!');
-
-    const checkReservat = await this.reservatRepo.existsBy({ movieId });
-
-    if (checkReservat)
-      throw new ConflictException('this move has been reservat');
-
-    const reservat = await this.reservatRepo.save({ movieId, userId: user.id });
-
-    await this.movieService.update(checkMovie.id, {
-      reservs: checkMovie.reservs + 1,
+  create({ movieId, seats }: CreateReservatDto, userId: string) {
+    return this.reservatRepo.save({
+      movieId,
+      userId,
+      seats,
     });
-
-    return reservat;
   }
 
   findAll(user: JwtPayload) {
-    return this.reservatRepo.findBy({ userId: user.id });
+    const Q = this.reservatRepo
+      .createQueryBuilder('reservat')
+      .leftJoinAndSelect('reservat.movie', 'movie')
+      .leftJoinAndSelect('movie.poster', 'poster')
+      .where('reservat.userId = :id', { id: user.id })
+      // don't kill performans with select *
+      .select([
+        'reservat.id',
+        'reservat.createdAt',
+        'reservat.seats',
+        'movie.id',
+        'movie.title',
+        'movie.showtime',
+        'poster.url',
+      ]);
+
+    return Q.getMany();
   }
 
-  findOne(id: string, user: JwtPayload) {
-    return this.reservatRepo
+  async findOne(id: string, user: JwtPayload) {
+    const reservat = await this.reservatRepo
       .createQueryBuilder('reservat')
       .where('reservat.id = :id AND reservat.userId = :userId', {
         id,
@@ -52,9 +51,11 @@ export class ReservatService {
       })
       .leftJoinAndSelect('reservat.movie', 'movie')
       .leftJoinAndSelect('movie.poster', 'poster')
+      // don't kill performans with select *
       .select([
         'reservat.id',
         'reservat.createdAt',
+        'reservat.seats',
         'movie.id',
         'movie.title',
         'movie.discription',
@@ -65,11 +66,14 @@ export class ReservatService {
         'poster.url',
       ])
       .getOne();
+
+    if (!reservat) throw new NotFoundException('reservat not found');
+
+    return reservat;
   }
 
   async remove(id: string, user: JwtPayload) {
     const reservat = await this.findOne(id, user);
-
     if (!reservat) throw new NotFoundException();
 
     await this.movieService.update(reservat.movie.id, {

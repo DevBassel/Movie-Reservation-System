@@ -9,5 +9,6 @@ import { MoviesModule } from '../movies/movies.module';
   imports: [TypeOrmModule.forFeature([Reservat]), MoviesModule],
   controllers: [ReservatController],
   providers: [ReservatService],
+  exports: [ReservatService],
 })
 export class ReservatModule {}

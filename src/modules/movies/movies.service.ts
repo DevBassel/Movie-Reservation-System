@@ -40,6 +40,8 @@ export class MoviesService {
         'movie.poster',
         'movie.showtime',
         'movie.seats',
+        'movie.price',
+        'movie.reservs',
         'movie.createdAt',
         'category.id',
         'category.name',
@@ -94,6 +96,7 @@ export class MoviesService {
         'movie.showtime',
         'movie.seats',
         'movie.reservs',
+        'movie.price',
         'movie.createdAt',
         'category.id',
         'category.name',
@@ -104,7 +107,7 @@ export class MoviesService {
       ])
       .getOne();
 
-    if (!movie) throw new NotFoundException();
+    if (!movie) throw new NotFoundException('movie not found');
 
     return movie;
   }

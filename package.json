@@ -10,6 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "stripe": " stripe listen --forward-to http://localhost:3000/api/v1/payment/webhook",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -42,6 +43,7 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "sharp": "^0.33.4",
+    "stripe": "^16.8.0",
     "typeorm": "^0.3.20",
     "uuid": "^10.0.0"
   },
