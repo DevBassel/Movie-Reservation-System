@@ -1,8 +1,11 @@
 import {
   BadRequestException,
   ConflictException,
+  forwardRef,
   GoneException,
+  Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,12 +15,17 @@ import { JwtPayload } from '../auth/dto/jwt-payload.dto';
 import { OrderStatus } from './enums/order-status.enum';
 import { MoviesService } from '../movies/movies.service';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { PaymentService } from '../payment/payment.service';
+import { ReservatService } from '../reservat/reservat.service';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectRepository(Order) private readonly orderRepo: Repository<Order>,
     private readonly movieService: MoviesService,
+    @Inject(forwardRef(() => PaymentService))
+    private paymentService: PaymentService,
+    private reservateService: ReservatService,
   ) {}
   async create({ movieId, seats }: CreateOrderDto, user: JwtPayload) {
     const checkOrder = await this.orderRepo.existsBy({ movieId });
@@ -53,7 +61,16 @@ export class OrderService {
   findAll(user: JwtPayload) {
     return this.orderRepo.find({
       where: { userId: user.id },
-      select: ['id', 'seats', 'total', 'status', 'movieId', 'createdAt'],
+      select: [
+        'id',
+        'seats',
+        'total',
+        'status',
+        'reservatId',
+        'movieId',
+        'createdAt',
+        'paymentId',
+      ],
     });
   }
 
@@ -61,7 +78,17 @@ export class OrderService {
     return this.orderRepo.findOne({
       where: { id, userId },
       relations: ['movie'],
-      select: ['id', 'total', 'userId', 'seats', 'movie', 'movieId'],
+      select: [
+        'id',
+        'total',
+        'userId',
+        'status',
+        'seats',
+        'reservatId',
+        'movie',
+        'movieId',
+        'paymentId',
+      ],
     });
   }
 
@@ -70,7 +97,14 @@ export class OrderService {
     return this.orderRepo.save({ ...order, ...data });
   }
 
-  remove(id: string, user: JwtPayload) {
+  async remove(id: string, user: JwtPayload) {
+    const order = await this.findOne(id, user.id);
+    if (!order) throw new NotFoundException('order not found');
+
+    await this.reservateService.remove(order.reservatId, user);
+
+    await this.paymentService.cancelPayment(order);
+
     return this.orderRepo.delete({ id, userId: user.id });
   }
 }

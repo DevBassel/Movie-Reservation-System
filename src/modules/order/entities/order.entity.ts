@@ -4,10 +4,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrderStatus } from '../enums/order-status.enum';
+import { Reservat } from 'src/modules/reservat/entities/reservat.entity';
 
 @Entity()
 export class Order {
@@ -38,8 +41,21 @@ export class Order {
   @Column()
   total: number;
 
+  @Column({ nullable: true })
+  paymentId: string;
+
   @Column()
   seats: number;
+
+  @OneToOne(() => Reservat, {
+    createForeignKeyConstraints: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  reservat: Reservat;
+
+  @Column({ nullable: true })
+  reservatId: string;
 
   @CreateDateColumn()
   createdAt: Date;
