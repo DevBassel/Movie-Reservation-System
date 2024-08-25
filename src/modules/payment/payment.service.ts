@@ -96,11 +96,13 @@ export class PaymentService {
 
   async successPaymentHandel(metadata: any) {
     console.log('payment is succeeded');
+    // get order data
     const order = await this.orderService.findOne(
       metadata.orderId,
       metadata.userID,
     );
 
+    // create reservat
     const reservat = await this.reservatService.create(
       {
         movieId: order.movieId,
@@ -109,11 +111,13 @@ export class PaymentService {
       metadata.userId,
     );
 
+    // update order staus
     await this.orderService.update(metadata.orderId, {
       status: OrderStatus.SUCCESSED,
       reservatId: reservat.id,
     });
 
+    // send email to user
     this.emailsService.sendEmail({
       to: metadata.email,
       subject: 'success payment',

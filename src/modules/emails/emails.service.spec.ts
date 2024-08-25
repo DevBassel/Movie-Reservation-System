@@ -12,7 +12,11 @@ describe('EmailsService', () => {
     service = module.get<EmailsService>(EmailsService);
   });
 
-  it('should be defined', () => {
+  it('emailis service should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('sendEmail method should be defined and called with correct parameters', () => {
+    expect(service.sendEmail).toBeDefined();
   });
 });

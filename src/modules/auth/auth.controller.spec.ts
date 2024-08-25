@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
+import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
+import { EmailsService } from '../emails/emails.service';
 
 describe('AuthController', () => {
   const USER_REPO_TOKEN = getRepositoryToken(User);
@@ -17,6 +18,7 @@ describe('AuthController', () => {
         AuthService,
         JwtService,
         UsersService,
+        EmailsService,
         {
           provide: USER_REPO_TOKEN,
           useValue: {},
@@ -27,7 +29,15 @@ describe('AuthController', () => {
     controller = module.get<AuthController>(AuthController);
   });
 
-  it('should be defined', () => {
+  it('should be defined auth controller', () => {
     expect(controller).toBeDefined();
+  });
+
+  it('register endpoint should be defuend ', async () => {
+    expect(controller.register).toBeDefined();
+  });
+
+  it('login endpoint should be defuend', async () => {
+    expect(controller.login).toBeDefined();
   });
 });

@@ -5,14 +5,17 @@ import { v4 } from 'uuid';
 
 @Injectable()
 export class FirebaseService {
-  private readonly config = JSON.parse(process.env.SERVICEACCOUNT);
+  private readonly config =
+    process.env.SERVICEACCOUNT && JSON.parse(process.env.SERVICEACCOUNT);
 
-  private readonly admin = FB.initializeApp({
-    credential: FB.credential.cert(this.config),
-    storageBucket: `${this.config.project_id}.appspot.com`,
-  });
+  private readonly admin =
+    this.config &&
+    FB.initializeApp({
+      credential: FB.credential.cert(this.config),
+      storageBucket: `${this.config.project_id}.appspot.com`,
+    });
 
-  private bucket = this.admin.storage().bucket();
+  private bucket = this.admin && this.admin.storage().bucket();
 
   async uploadFile(file: Express.Multer.File) {
     const fileName = `movies-posters/${v4()}__${new Date().toISOString()}`;
@@ -46,8 +49,10 @@ export class FirebaseService {
     try {
       await file.delete();
       console.log('file deleted');
+      return true;
     } catch (error) {
       console.log(error);
+      return false;
     }
   }
 }
