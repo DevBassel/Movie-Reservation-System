@@ -18,6 +18,9 @@ declare global {
       STRIPE_SK: string;
       STRIPE_PK: string;
       STRIPE_WEBHOOK_SK: string;
+      // email smtp
+      EMAIL_USER: string;
+      EMAIL_SK: string;
     }
   }
 }

@@ -12,6 +12,8 @@ import { JwtPayload } from '../auth/dto/jwt-payload.dto';
 import { OrderStatus } from '../order/enums/order-status.enum';
 import { ReservatService } from '../reservat/reservat.service';
 import { Order } from '../order/entities/order.entity';
+import { EmailsService } from '../emails/emails.service';
+import { SucccessPaymentTemp } from '../emails/templates/success-payment.template';
 
 @Injectable()
 export class PaymentService {
@@ -20,6 +22,7 @@ export class PaymentService {
     @Inject(forwardRef(() => OrderService))
     private readonly orderService: OrderService,
     private readonly reservatService: ReservatService,
+    private readonly emailsService: EmailsService,
   ) {}
 
   async pay(orderId: string, user: JwtPayload) {
@@ -31,7 +34,11 @@ export class PaymentService {
       payment_method_types: ['card'],
       amount: order.total * 100,
       currency: 'USD',
-      metadata: { orderId, userId: user.id },
+      metadata: {
+        orderId,
+        userId: user.id,
+        email: user.email,
+      },
     });
 
     await this.orderService.update(order.id, { paymentId: create.id });
@@ -73,36 +80,48 @@ export class PaymentService {
           break;
 
         case 'payment_intent.payment_failed':
-          console.log('payment is failed');
           await this.orderService.update(metadata.orderId, {
             status: OrderStatus.FAILED,
           });
           break;
 
         case 'payment_intent.succeeded':
-          console.log('payment is succeeded');
-
-          const order = await this.orderService.findOne(
-            metadata.movieId,
-            metadata.userId,
-          );
-          console.log({ order });
-          const reservat = await this.reservatService.create(
-            {
-              movieId: order.movieId,
-              seats: order.seats,
-            },
-            metadata.userId,
-          );
-          await this.orderService.update(metadata.orderId, {
-            status: OrderStatus.SUCCESSED,
-            reservatId: reservat.id,
-          });
+          this.successPaymentHandel(metadata);
           break;
-
         default:
           console.log(`Unhandled event type ${event.type}`);
       }
     }
+  }
+
+  async successPaymentHandel(metadata: any) {
+    console.log('payment is succeeded');
+    const order = await this.orderService.findOne(
+      metadata.orderId,
+      metadata.userID,
+    );
+
+    const reservat = await this.reservatService.create(
+      {
+        movieId: order.movieId,
+        seats: order.seats,
+      },
+      metadata.userId,
+    );
+
+    await this.orderService.update(metadata.orderId, {
+      status: OrderStatus.SUCCESSED,
+      reservatId: reservat.id,
+    });
+
+    this.emailsService.sendEmail({
+      to: metadata.email,
+      subject: 'success payment',
+      html: SucccessPaymentTemp(
+        metadata.orderId,
+        reservat.movieId,
+        reservat.seats,
+      ),
+    });
   }
 }

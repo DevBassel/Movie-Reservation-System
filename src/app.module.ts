@@ -11,6 +11,7 @@ import { FirebaseModule } from './modules/firebase/firebase.module';
 import { ReservatModule } from './modules/reservat/reservat.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { OrderModule } from './modules/order/order.module';
+import { EmailsModule } from './modules/emails/emails.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { OrderModule } from './modules/order/order.module';
     ReservatModule,
     PaymentModule,
     OrderModule,
+    EmailsModule,
   ],
 })
 export class AppModule {}

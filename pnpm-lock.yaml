@@ -6849,6 +6849,7 @@ snapshots:
       reflect-metadata: 0.2.2
       rxjs: 7.8.1
       sharp: 0.33.4
+      stripe: 16.8.0
       typeorm: 0.3.20(pg@8.12.0)(ts-node@10.9.2(@types/node@20.14.14)(typescript@5.5.4))
       uuid: 10.0.0
     transitivePeerDependencies:

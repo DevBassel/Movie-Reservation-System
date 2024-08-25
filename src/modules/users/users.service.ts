@@ -12,17 +12,25 @@ import { Repository } from 'typeorm';
 import { hash } from 'bcrypt';
 import { RoleType } from '../auth/enums/roleType.enum';
 import { SetAdminType } from './types/set-admin.type';
+import { EmailsService } from '../emails/emails.service';
+import { JoinUserTemp } from '../emails/templates/join-user.template';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
+    private readonly emailsService: EmailsService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
     try {
       createUserDto.password = await hash(createUserDto.password, 10);
-      await this.userRepo.save(createUserDto);
+      const user = await this.userRepo.save(createUserDto);
+      this.emailsService.sendEmail({
+        to: user.email,
+        subject: 'say hi',
+        html: JoinUserTemp(user.name),
+      });
       return { msg: 'users is created' };
     } catch (error) {
       if (error.code === '23505')

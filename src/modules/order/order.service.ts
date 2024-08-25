@@ -17,6 +17,8 @@ import { MoviesService } from '../movies/movies.service';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PaymentService } from '../payment/payment.service';
 import { ReservatService } from '../reservat/reservat.service';
+import { EmailsService } from '../emails/emails.service';
+import { createOrderTemp } from '../emails/templates/create-order.template';
 
 @Injectable()
 export class OrderService {
@@ -24,11 +26,15 @@ export class OrderService {
     @InjectRepository(Order) private readonly orderRepo: Repository<Order>,
     private readonly movieService: MoviesService,
     @Inject(forwardRef(() => PaymentService))
-    private paymentService: PaymentService,
-    private reservateService: ReservatService,
+    private readonly paymentService: PaymentService,
+    private readonly reservateService: ReservatService,
+    private readonly emailsService: EmailsService,
   ) {}
   async create({ movieId, seats }: CreateOrderDto, user: JwtPayload) {
-    const checkOrder = await this.orderRepo.existsBy({ movieId });
+    const checkOrder = await this.orderRepo.existsBy({
+      movieId,
+      userId: user.id,
+    });
 
     if (checkOrder)
       throw new ConflictException(
@@ -48,12 +54,17 @@ export class OrderService {
         `no more seats, we have a ${movie.seats} seats avilable`,
       );
 
-    await this.orderRepo.save({
+    const order = await this.orderRepo.save({
       movieId,
       userId: user.id,
       total: movie.price * seats,
       seats,
       status: OrderStatus.PENDING,
+    });
+    this.emailsService.sendEmail({
+      to: user.email,
+      subject: 'create order',
+      html: createOrderTemp(order.id, movie, user.name),
     });
     return { msg: 'order is created go to complet payment' };
   }
