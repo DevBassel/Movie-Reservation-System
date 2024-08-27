@@ -1,29 +1,41 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestingModule } from '@nestjs/testing';
 import { MoviesController } from './movies.controller';
-import { MoviesService } from './movies.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Movie } from './entities/movie.entity';
+
+import { RootTestingModule } from 'test/utils/root-test.module.spec';
 
 describe('MoviesController', () => {
   let controller: MoviesController;
-  const MOVIE_REPO_TOKEN = getRepositoryToken(Movie);
-
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [MoviesController],
-      providers: [
-        MoviesService,
-        {
-          provide: MOVIE_REPO_TOKEN,
-          useValue: {},
-        },
-      ],
-    }).compile();
+    const module: TestingModule = await RootTestingModule();
 
     controller = module.get<MoviesController>(MoviesController);
   });
 
-  it('should be defined', () => {
+  it('movie controller should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  it('create movie endpoint should be defined', () => {
+    expect(controller.create).toBeDefined();
+  });
+
+  it('update movie endpoint should be defined', () => {
+    expect(controller.update).toBeDefined();
+  });
+
+  it('update movie poster endpoint should be defined', () => {
+    expect(controller.updatePoster).toBeDefined();
+  });
+
+  it('find all movie  endpoint should be defined', () => {
+    expect(controller.findAll).toBeDefined();
+  });
+
+  it('find one movie  endpoint should be defined', () => {
+    expect(controller.findOne).toBeDefined();
+  });
+
+  it('delete  movie  endpoint should be defined', () => {
+    expect(controller.remove).toBeDefined();
   });
 });

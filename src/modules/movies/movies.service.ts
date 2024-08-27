@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -118,7 +122,15 @@ export class MoviesService {
     return this.movieRepo.save({ ...movie, ...updateMovieDto });
   }
 
-  async updatePoster() {}
+  async updatePoster(id: string, file: Express.Multer.File) {
+    if (!file) throw new BadRequestException('new poster should be provide');
+
+    const movie = await this.findOne(id);
+    await this.mediaService.delete(movie.poster.cloudId);
+    const newPoster = await this.mediaService.create(file);
+
+    return this.movieRepo.save({ ...movie, poster: newPoster });
+  }
 
   remove(id: string) {
     return this.movieRepo.delete({ id });

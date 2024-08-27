@@ -66,7 +66,7 @@ export class OrderService {
       subject: 'create order',
       html: createOrderTemp(order.id, movie, user.name),
     });
-    return { msg: 'order is created go to complet payment' };
+    return { msg: 'order is created' };
   }
 
   findAll(user: JwtPayload) {
@@ -105,7 +105,8 @@ export class OrderService {
 
   async update(id: string, data: UpdateOrderDto) {
     const order = await this.orderRepo.findOneBy({ id });
-    return this.orderRepo.save({ ...order, ...data });
+    await this.orderRepo.save({ ...order, ...data });
+    return { msg: 'order has been updated' };
   }
 
   async remove(id: string, user: JwtPayload) {
@@ -114,7 +115,7 @@ export class OrderService {
 
     await this.reservateService.remove(order.reservatId, user);
 
-    await this.paymentService.cancelPayment(order);
+    await this.paymentService.cancelPayment(order.paymentId);
 
     return this.orderRepo.delete({ id, userId: user.id });
   }

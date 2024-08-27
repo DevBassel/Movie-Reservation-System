@@ -1,31 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { EmailsService } from '../emails/emails.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
+import { RootTestingModule } from 'test/utils/root-test.module.spec';
 
 describe('AuthService', () => {
   let service: AuthService;
   const USER_REPO_TOKEN = getRepositoryToken(User);
   let userRepo: Repository<User>;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        AuthService,
-        JwtService,
-        EmailsService,
-        UsersService,
-        {
-          provide: USER_REPO_TOKEN,
-          useValue: {},
-        },
-      ],
-    }).compile();
+    const module: TestingModule = await RootTestingModule();
 
     service = module.get<AuthService>(AuthService);
     userRepo = module.get<Repository<User>>(USER_REPO_TOKEN);

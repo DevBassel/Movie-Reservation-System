@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Delete, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { ReservatService } from './reservat.service';
 import { AuthRequest } from 'src/interfaces/auth-request';
 import { JwtGuard } from '../auth/guards/jwt.guard';
@@ -16,10 +16,5 @@ export class ReservatController {
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: AuthRequest) {
     return this.reservatService.findOne(id, req.user);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string, @Req() req: AuthRequest) {
-    return this.reservatService.remove(id, req.user);
   }
 }

@@ -11,7 +11,6 @@ import { OrderService } from '../order/order.service';
 import { JwtPayload } from '../auth/dto/jwt-payload.dto';
 import { OrderStatus } from '../order/enums/order-status.enum';
 import { ReservatService } from '../reservat/reservat.service';
-import { Order } from '../order/entities/order.entity';
 import { EmailsService } from '../emails/emails.service';
 import { SucccessPaymentTemp } from '../emails/templates/success-payment.template';
 
@@ -43,14 +42,22 @@ export class PaymentService {
 
     await this.orderService.update(order.id, { paymentId: create.id });
 
-    return create;
+    return {
+      paymentId: create.id,
+      amount: create.amount,
+      client_secret: create.client_secret,
+    };
   }
 
-  async cancelPayment(order: Order) {
+  async cancelPayment(paymentId: string) {
     const refund = await this.stripe.refunds.create({
-      payment_intent: order.paymentId,
+      payment_intent: paymentId,
     });
-    return refund;
+    return {
+      status: refund.status,
+      paymentId: refund.payment_intent,
+      amount: refund.amount,
+    };
   }
 
   async webhook(req: RawBodyRequest<Request>, sin: string) {
@@ -94,7 +101,7 @@ export class PaymentService {
     }
   }
 
-  async successPaymentHandel(metadata: any) {
+  private async successPaymentHandel(metadata: any) {
     console.log('payment is succeeded');
     // get order data
     const order = await this.orderService.findOne(

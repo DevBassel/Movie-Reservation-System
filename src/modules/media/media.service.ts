@@ -30,5 +30,6 @@ export class MediaService {
   async delete(fileName: string) {
     await this.firebaseService.deleteFile(fileName);
     await this.mediaRepo.delete({ cloudId: fileName });
+    return true;
   }
 }

@@ -68,6 +68,16 @@ export class MoviesController {
     return this.moviesService.update(id, updateMovieDto);
   }
 
+  @Patch(':id/poster')
+  @SetRoles(RoleType.ADMIN, RoleType.SUPER_ADMIN)
+  @UseInterceptors(FileInterceptor('poster'))
+  updatePoster(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.moviesService.updatePoster(id, file);
+  }
+
   @Delete(':id')
   @SetRoles(RoleType.ADMIN, RoleType.SUPER_ADMIN)
   remove(@Param('id') id: string) {

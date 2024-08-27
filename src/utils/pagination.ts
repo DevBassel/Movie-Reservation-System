@@ -13,7 +13,7 @@ export async function pagination<T extends ObjectLiteral>(
     .getManyAndCount();
 
   return {
-    pagination: data,
+    data: data,
     total,
     pages: Math.ceil(total / limit),
     page,
