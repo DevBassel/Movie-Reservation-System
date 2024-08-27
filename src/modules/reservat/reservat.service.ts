@@ -42,6 +42,32 @@ export class ReservatService {
     return Q.getMany();
   }
 
+  findAllOfUssers(showtime: Date, currentDate: Date) {
+    const Q = this.reservatRepo
+      .createQueryBuilder('reservat')
+      .leftJoinAndSelect('reservat.movie', 'movie')
+      .leftJoinAndSelect('reservat.user', 'user')
+      .leftJoinAndSelect('movie.poster', 'poster')
+      .where('movie.showtime BETWEEN :currentDate AND :showtime', {
+        currentDate,
+        showtime,
+      })
+      .select([
+        'reservat.id',
+        'reservat.seats',
+        'reservat.createdAt',
+        'user.id',
+        'user.name',
+        'user.email',
+        'movie.id',
+        'movie.title',
+        'movie.showtime',
+        'poster.url',
+      ]);
+
+    return Q.getMany();
+  }
+
   async findOne(id: string, user: JwtPayload) {
     const reservat = await this.reservatRepo
       .createQueryBuilder('reservat')

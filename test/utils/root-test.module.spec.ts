@@ -21,6 +21,7 @@ import { PaymentService } from 'src/modules/payment/payment.service';
 import { Reservat } from 'src/modules/reservat/entities/reservat.entity';
 import { ReservatController } from 'src/modules/reservat/reservat.controller';
 import { ReservatService } from 'src/modules/reservat/reservat.service';
+import { SchedulingService } from 'src/modules/scheduling/scheduling.service';
 import { User } from 'src/modules/users/entities/user.entity';
 import { UsersController } from 'src/modules/users/users.controller';
 import { UsersService } from 'src/modules/users/users.service';
@@ -56,6 +57,7 @@ export async function RootTestingModule(): Promise<TestingModule> {
       JwtService,
       EmailsService,
       UsersService,
+      SchedulingService,
       {
         provide: getRepositoryToken(User),
         useValue: values,
