@@ -18,7 +18,7 @@ import { FileLogger } from 'typeorm';
             ? new FileLogger('all', {
                 logPath: './logs/DB.log',
               })
-            : 'simple-console',
+            : 'debug',
         autoLoadEntities: true,
         logging: true,
         synchronize: true,
