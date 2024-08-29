@@ -19,6 +19,7 @@
 - [x] User Authentication and Authorization
   - login
   - register
+  - JWT Authorization
 - [x] Roles (super-admin, admin, user)
   - super-admin can up user to admin And vice versa
 - [x] Movie Management
